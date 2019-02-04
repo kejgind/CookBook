@@ -15,7 +15,7 @@ export default new Router({
       component: RecipeList
     },
     {
-      path: '/recipe:slug',
+      path: '/recipe',
       name: 'recipe',
       component: Recipe,
     }
