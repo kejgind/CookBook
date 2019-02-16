@@ -45,6 +45,7 @@
 
 <script>
 export default {
+  props: ["slug"],
   data() {
     return {
       loader: true,
@@ -59,28 +60,28 @@ export default {
     };
   },
   created() {
-    const currentUrl = document.URL;
-    const slug = currentUrl.substr(
-      currentUrl.lastIndexOf("/") + 1,
-      currentUrl.length
-    );
-
     this.$http
-      .get(this.setQuery(slug))
+      .get(this.setQuery(this.slug))
       .then(data => {
         return data.json();
       })
       .then(data => {
-        const recipeData = data[0].acf;
-        this.recipe.name = recipeData.nazwa_potrawy;
-        this.recipe.img = recipeData.zdjecie_glowne_potrawy.url;
-        this.recipe.prepTime = recipeData.szacunkowy_czas_przygotowania_potrawy;
-        this.recipe.ingredients = recipeData.zestawienie_skladnikow_potrawy
-          .split(";\r\n")
-          .map(recipe => recipe.replace(";", ""));
-        this.recipe.preparation = recipeData.sposob_przygotowania_potrawy
-          .replace(/<\/?p>/g, "")
-          .split("<br />\n");
+        if (data[0]) {
+          const recipeData = data[0].acf;
+          this.recipe.name = recipeData.nazwa_potrawy;
+          this.recipe.img = recipeData.zdjecie_glowne_potrawy.url;
+          this.recipe.prepTime =
+            recipeData.szacunkowy_czas_przygotowania_potrawy;
+          this.recipe.ingredients = recipeData.zestawienie_skladnikow_potrawy
+            .split(";\r\n")
+            .map(recipe => recipe.replace(";", ""));
+          this.recipe.preparation = recipeData.sposob_przygotowania_potrawy
+            .replace(/<\/?p>/g, "")
+            .split("<br />\n");
+        } else {
+          this.loader = false;
+          this.$router.push("/404");
+        }
       });
   },
   methods: {
